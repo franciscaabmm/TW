@@ -1,24 +1,85 @@
 <!DOCTYPE html>
-<!-- A declaração DOCTYPE declara a versão do HTML usado no documento -->
 <html>
- <head>
-    <link rel="stylesheet" href="estilo_2.css">
-    <meta charset="UTF-8">
-    <title>Game-tab</title>
-    <style>
-        body{
-            background-color: lightblue;
-            color:black;
-            padding:20px;
-        }
-        h1{
-            background-color: black;
-            color:wheat;
-            padding:20px;
-            text-align: center;
-        }
-    </style>
-  </head>
-  <body>
-    <h1>Welcome to the game-tab</h1>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <title>Game-tab</title>
+  <style>
+     .img {
+    width: 700px;
+    height: 500px;
+    border: 2px solid white;
+    display: block;
+  }
+    body {
+      background-color: lightblue;
+      color: black;
+      padding: 20px;
+    }
+
+    @keyframes titleAnimation {
+      0% {
+        color: #ff4d4f;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      25% {
+        color: #ffa940;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      50% {
+        color: #52c41a;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      75% {
+        color: #1890ff;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      100% {
+        color: #ff4d4f;
+        font-family: 'Courier New', Courier, monospace;
+      }
+    }
+
+    .animated-title {
+      animation: titleAnimation 6s infinite;
+      font-size: 48px;
+      text-align: center;
+      padding: 20px;
+      background-color: black;
+      color:white;
+      margin:0;
+    }
+    .title-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    @keyframes flyIn {
+      from {
+        transform: translateX(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      animation: flyIn 1s ease-out forwards;
+      flex-shrink:0;
+    }
+  </style>
+</head>
+<body>
+  <div class="title-container"></div>
+  <h1 class="animated-title">Welcome to the Game-TÂB!</h1>
+  <img src="C:\Users\86133\Desktop\game\微信图片_20251011214927_7_5.jpg" alt="头像" class="avatar">
+  <img src="https://lh7-us.googleusercontent.com/OPzozFFt0os1PFKh7iOCxQdN8a3_9OjZYAldAdkpeeot_vEgwZ1TCwEWjUwV1Mut_T3RH9Hk2Eb7EOR30C_gtW1Dx-IrPG-9r6nrFDEVeJWqudHDkETKDCsIc8pFu7A23BbY7kNNBMBdfzUPyOw31Ng"  class="img">
+</body>
+</html>
