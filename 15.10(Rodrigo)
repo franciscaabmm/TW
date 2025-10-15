@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Game-tab</title>
+  <style>
+    .main-content {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.left-column {
+  width: 60%; /* 可以调整 */
+}
+
+.right-column {
+  width: 27%; /* 可以调整 */
+}
+     .img {
+    width: 500px;
+    height: 300px;
+    border: 2px solid white;
+    display: block;
+  }
+    @keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+body {
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradientAnimation 15s ease infinite;
+  color: white;
+  padding: 20px;
+  height: 100%;
+  overflow: hidden;
+}
+
+
+    @keyframes titleAnimation {
+      0% {
+        color: #ff4d4f;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      25% {
+        color: #ffa940;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      50% {
+        color: #52c41a;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      75% {
+        color: #1890ff;
+        font-family: 'Courier New', Courier, monospace;
+      }
+      100% {
+        color: #ff4d4f;
+        font-family: 'Courier New', Courier, monospace;
+      }
+    }
+
+    .animated-title {
+      animation: titleAnimation 10s infinite;
+      font-size: 48px;
+      text-align: center;
+      padding: 20px;
+      background-color: black;
+      color:white;
+      margin:0;
+      
+    }
+    .title-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    @keyframes flyIn {
+      from {
+        transform: translateX(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+
+    .avatar {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      object-fit: cover;
+      animation: flyIn 2s ease-out forwards;
+      flex-shrink:0;
+    }
+     .section {
+      width: 30%;
+      margin: 20px;
+    }
+
+    .rules {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 16px;
+      font-weight: bold;
+      line-height: 1.6;
+    }
+
+    .config-box {
+      border: 2px solid black;
+      padding: 20px;
+      width: 400px;
+      height: auto;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+      margin: 20px;
+    }
+
+    .config-box h1 {
+      margin-top: 0;
+      color: #1890ff;
+      font-size: 24px;
+    }
+     .comando-box {
+      border: 2px solid white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 350px;
+      background-color: rgba(0, 0, 0, 0.3);
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      margin-top: 20px;
+    }
+    .comando-box h2 {
+      font-size: 22px;
+      margin-bottom: 15px;
+    }
+
+    .comando-box ul {
+      list-style: none;
+      padding: 0;
+
+    }
+
+    .comando-box li {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      transition: background 0.3s;
+      cursor: pointer;
+    }
+
+    .comando-box li:hover {
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .footer {
+     position: fixed;
+     bottom: 0;
+     left: 0;
+     padding: 10px 15px;
+     color: white;
+     font-family: 'Courier New', Courier, monospace;
+     font-size: 14px;
+     background-color: rgba(0, 0, 0, 0.3);
+     border-top-right-radius: 8px;
+    }
+
+  </style>
+</head>
+
+<body>
+    <div class="animated-title title-container">
+    <span><b>Welcome to the Game-Tâb!</b></span>
+    <img class="avatar" src="images/avatar.jpg" alt="Avatar">
+    <!-- CRIAR UMA PASTA "IMAGES" NA PASTA DO PROJETO PARA ACEDER ÁS IMAGENS R. --->
+    </div>
+    <div class="main-content">
+   <div class="left-column">
+    
+    <!-- Game Rules -->
+    <div class="comando-box">
+      <h1><b>Game rules</b></h1>
+      <ul class="rules">
+        <li>🎮 A 2-player game on a 4-column board with 7–15 rows</li>
+        <li>🧍 Each player starts with 4 pieces in their row</li>
+        <li>🎲 Movement is based on throwing 4 two-sided sticks</li>
+        <li>🎯 Goal: move pieces forward and capture opponent’s pieces</li>
+        <li>📚 Inspired by Senet and Korean Yut games</li>
+      </ul>
+    </div>
+
+    <!-- Configuração -->
+    <div class="comando-box">
+      <h1>⚙️ Settings</h1>
+      <p>Costumize the page to your liking:</p>
+      <ul>
+        <li>1. Font Size</li>
+        <li>2. Font Style</li>
+        <li>3. Volume</li>
+      </ul>
+    </div>
+  
+ <div class="right-column">
+    <!-- Commands -->
+    <div class="comando-box">
+      <h2>🕹️ Commands</h2>
+      <ul>
+        <li>📖 Choose a Gamemode</li>
+        <li>▶️ Player VS Player</li>
+        <li>⏭️ Player VS AI</li>
+        <li>🏳️ Quit Game</li>
+        <li>📊 Rankings</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!--RODAPÉ COM AS NOSSAS INFORMAÇÕES R.-->
+<footer style="text-align:bottom; margin-top:40px; color:white;">
+  <p>2025 Game-Tâb Project | Designed by Rodrigo Soares, Chen Tian Han and Francisca Macedo</p>
+</footer>
