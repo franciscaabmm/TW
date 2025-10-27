@@ -8,17 +8,18 @@ It provides an interactive game interface featuring a main game panel, rules, le
 ## 📁 Project Structure
 
 /project-root
+
 ├── index.html
 ├── style.css
 ├── /images
-│ └── avatar.jpg
+   │ └── avatar.jpg
 └── /js
-├── app.js ← entry point (event listeners & initialization)
-├── board.js ← board representation and game logic
-├── ui.js ← UI rendering and DOM interaction
-├── dice.js ← dice logic and visuals
-├── ai.js ← AI logic (levels: random, capture-first, optional minimax)
-└── storage.js ← localStorage management for leaderboard
+   ├── app.js ← entry point (event listeners & initialization)
+   ├── board.js ← board representation and game logic
+   ├── ui.js ← UI rendering and DOM interaction
+   ├── dice.js ← dice logic and visuals
+   ├── ai.js ← AI logic (levels: random, capture-first, optional minimax)
+   └── storage.js ← localStorage management for leaderboard
 
 
 ---
@@ -32,22 +33,21 @@ It provides an interactive game interface featuring a main game panel, rules, le
 
 2. Open the project in your browser:
 
-Simply open the index.html file directly.
+   Simply open the index.html file directly.
 
-Make sure all folders (/js, /images, etc.) are in the same directory level as index.html.
+   Make sure all folders (/js, /images, etc.) are in the same directory level as index.html.
 
 3. (Recommended) Run a local server to use ES6 modules properly:
 
-# Python 3
-python3 -m http.server 8000
+   Python 3
+   python3 -m http.server 8000
 
-# or Node.js
-npx serve .
-
+or Node.js
+   npx serve .
 
 Then open: http://localhost:8000
 
-🧠 Module Overview
+## 🧠 Module Overview
 Module	Description
 app.js	Main entry point. Initializes the game and sets up event listeners.
 board.js	Manages the board data structure and game state.
@@ -65,7 +65,7 @@ Leaderboard and control panels styled with soft neon effects.
 
 Retro console-inspired typography.
 
-🧩 Features
+### 🧩 Features
 
 ✅ Animated gradient background
 
@@ -77,7 +77,7 @@ Retro console-inspired typography.
 
 ✅ Modular architecture for scalability (AI, board, dice, etc.)
 
-🧱 Technologies Used
+### 🧱 Technologies Used
 
 HTML5 – page structure
 
@@ -87,23 +87,11 @@ JavaScript (ES6 Modules) – modular game logic
 
 LocalStorage API – persistent leaderboard storage
 
-💡 Future Improvements
-
-Implement full board rendering and dynamic piece placement
-
-Add 3D or canvas-based dice animations
-
-Introduce AI levels (random, capture-first, minimax)
-
-Support local multiplayer mode
-
-Save game history in localStorage
-
-👨‍💻 Authors
+## 👨‍💻 Authors
 
 Developers / Students – FCUP 2025
 
-⚖️ License
+### ⚖️ License
 
 This project is released under the MIT License, allowing free use, modification, and distribution with proper attribution.
 
