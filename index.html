@@ -1,79 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt"> 
 <head>
   <meta charset="UTF-8">
-  <title>Game-tab</title>
-  <!-- Ligação ao ficheiro CSS externo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game-Tâb</title> 
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <div class="animated-title title-container">
-    <span><b>Welcome to the Game-Tâb!</b></span>
-    <img class="avatar" src="images/avatar.jpg" alt="Avatar">
-  </div>
+  <!-- Main Header with animated title -->
+  <header class="title-container animated-title">
+    <h1>Welcome to the Game!</h1>
+    <!-- logo -->
+    <img 
+      class="Tab" 
+      src="images/tab.jpg" 
+      alt="Tâb" 
+      loading="lazy"  
+    >
+  </header>
 
-  <div class="main-content">
-    <div class="left-column">
-      <!-- Game Rules -->
-      <div class="comando-box">
-        <h2><b>Game rules</b></h2>
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Left Column - Game information and settings -->
+    <aside class="left-column">
+      <!-- Game Rules section -->
+      <section class="comando-box" aria-labelledby="game-rules-title">
+        <h2 id="game-rules-title">🎯 Game Rules</h2>
         <ul class="rules">
-          <li>🧍 Cada jogador começa com 4 peças por linha.</li>
-          <li>🎲 Os movimentos são decididos por 4 dados.</li>
-          <li>🎯 Avança e captura as peças do adversário!</li>
+          <li>🧍 Each player starts with a piece in each column on a row.</li>
+          <li>🎲 The possible moves are determined by 4 dice that influence the play.</li> 
+          <li>🏁 Move forward and capture the opponent's pieces!</li> 
         </ul>
-      </div>
+      </section>
 
-      <!-- Settings -->
-      <div class="comando-box">
-        <h2>⚙️ Configurações</h2> 
+      <!-- Game Settings section -->
+      <section class="comando-box" aria-labelledby="settings-title">
+        <h2 id="settings-title">⚙️ Settings</h2> 
         <ul>
-          <li>📏 Tamanho do tabuleiro</li>
-          <li>🤖 Nível da inteligência  artificial</li>
-          <li>🙋‍♂️ Primeiro jogador a jogar</li>
-          <li>⏭️ Jogador VS Computador</li>
-          <li>▶️ Jogador VS Jogador</li>
+          <li>📏 Board Size</li>
+          <li>🤖 Artificial Intelligence Level</li>
+          <li>🙋‍♂️ First Player to Play</li>
+          <li>⏭️ Player VS Computer</li>
+          <li>▶️ Player VS Player</li>
         </ul>
-      </div>
-    </div>
+      </section>
+    </aside>
 
-    <div class="right-column">
-      <!-- Comandos -->
-      <div class="comando-box">
-        <h2>🕹️ Comandos</h2>
+    <!-- Right Column - User interactions and rankings -->
+    <section class="right-column">
+      <!-- Game Commands section -->
+      <section class="comando-box" aria-labelledby="commands-title">
+        <h2 id="commands-title">🕹️ Commands</h2>
         <ul>
-          <li>📖 Escolher um modo</li>
-          <li>🏳️ Desistir do jogo</li>
-          <li>📊 Visualizar as classificações</li>
+          <li>📖 Choose a mode</li>
+          <li>🏳️ Quit the game</li>
+          <li>📊 View the Rankings</li> 
         </ul>
-      </div>
+      </section>
 
-      <div class="comando-box">
-        <input type="text" placeholder="Username">
-        <input type="password" placeholder="Password">
-        <button>Login</button>
-      </div>
+      <!-- User Login -->
+      <section class="comando-box" aria-labelledby="login-title">
+        <h2 id="login-title">🔐 Login</h2>
 
-      <!-- Leaderboard -->
-      <div class="leaderboard">
-        <h1>Leaderboard</h1>
-        <ol>
-          <li><span class="rank">1</span><span class="name">n1</span><span class="w/l">w/l</span></li>
-          <li><span class="rank">2</span><span class="name">n2</span><span class="w/l">w/l</span></li>
-          <li><span class="rank">3</span><span class="name">n3</span><span class="w/l">w/l</span></li>
-          <li><span class="rank">4</span><span class="name">n4</span><span class="w/l">w/l</span></li>
-          <li><span class="rank">5</span><span class="name">n5</span><span class="w/l">w/l</span></li>
-        </ol>
-      </div>
-    </div>
-  </div>
+        <form class="login-form" method="post" action="/login">
+          <label for="username">Username:</label>
+          <input 
+            id="username" 
+            name="username" 
+            type="text" 
+            placeholder="Enter your username" 
+            autocomplete="username" 
+          >
+          
+          <label for="password">Password:</label>
+          <input 
+            id="password" 
+            name="password" 
+            type="password" 
+            placeholder="Enter your password" 
+            autocomplete="current-password" 
+          >
+          
+          <button type="submit">Login</button>
+        </form>
+      </section>
 
-  <!-- Game Board -->
-  <div class="game-panel">
-    <h2>🧩 Game Panel</h2>
+      <!-- Leaderboard section showing player rankings -->
+      <section class="leaderboard" aria-labelledby="leaderboard-title">
+        <h2 id="leaderboard-title">🏆 Leaderboard</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>W / L</th>  <!-- Wins / Losses -->
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Sample leaderboard data -->
+            <tr><td>1</td><td>n1</td><td>10 / 2</td></tr>
+            <tr><td>2</td><td>n2</td><td>8 / 3</td></tr>
+            <tr><td>3</td><td>n3</td><td>7 / 4</td></tr>
+            <tr><td>4</td><td>n4</td><td>5 / 5</td></tr>
+            <tr><td>5</td><td>n5</td><td>3 / 6</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </section>
+  </main>
+
+  <!-- Game Panel - Main game interface -->
+  <section class="game-panel" aria-labelledby="game-panel-title">
+    <h2 id="game-panel-title">🧩 Game Panel</h2>
     <p>Prepare to play!</p>
-  </div>
-  <script type="module" src="js/app.js"></script>
+  </section>
+
+  <!-- JavaScript application file -->
+  <script src="js/app.js"></script>
 </body>
 </html>
