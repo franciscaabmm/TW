@@ -1,3 +1,7 @@
+/* ============================================
+   BASE STYLES AND LAYOUT
+   ============================================ */
+
 .main-content {
   display: flex;
   justify-content: space-between;
@@ -5,11 +9,11 @@
 }
 
 .left-column {
-  width: 60%; /* 可以调整 */
+  width: 60%; /* Left column takes 60% of width */
 }
 
 .right-column {
-  width: 27%; /* 可以调整 */
+  width: 27%; /* Right column takes 27% of width */
 }
 
 .img {
@@ -19,7 +23,10 @@
   display: block;
 }
 
-/* Background animation */
+/* ============================================
+   BACKGROUND AND TITLE ANIMATIONS
+   ============================================ */
+
 @keyframes gradientAnimation {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -28,13 +35,12 @@
 
 body {
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-  background-size: 400% 400%;
+  background-size: 400% 400%; /* Creates gradient animation effect */
   animation: gradientAnimation 15s ease infinite;
   color: white;
   padding: 20px;
 }
 
-/* Title animation */
 @keyframes titleAnimation {
   0% {
     color: #ff4d4f;
@@ -59,13 +65,13 @@ body {
 }
 
 .animated-title {
-  animation: titleAnimation 10s infinite;
+  animation: titleAnimation 10s infinite; /* Continuous color animation */
   font-size: 48px;
   text-align: center;
   padding: 20px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
   border: 2px solid transparent;
-  border-image: linear-gradient(45deg, #ff4d4f, #ffa940, #52c41a, #1890ff) 1;
+  border-image: linear-gradient(45deg, #ff4d4f, #ffa940, #52c41a, #1890ff) 1; /* Gradient border */
   border-radius: 12px;
   color: white;
   margin: 0;
@@ -76,13 +82,16 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  white-space: nowrap;
+  white-space: nowrap; /* Prevents text wrapping */
 }
 
-/* Avatar animation */
+/* ============================================
+   AVATAR AND SECTIONS
+   ============================================ */
+
 @keyframes flyIn {
   from {
-    transform: translateX(-100px);
+    transform: translateX(-100px); /* Starts from left */
     opacity: 0;
   }
   to {
@@ -94,10 +103,10 @@ body {
 .avatar {
   width: 180px;
   height: 180px;
-  border-radius: 50%;
-  object-fit: cover;
-  animation: flyIn 2s ease-out forwards;
-  flex-shrink: 0;
+  border-radius: 50%; /* Circular avatar */
+  object-fit: cover; /* Maintains aspect ratio */
+  animation: flyIn 2s ease-out forwards; /* Slide-in animation */
+  flex-shrink: 0; /* Prevents shrinking */
 }
 
 .section {
@@ -109,13 +118,16 @@ body {
   font-family: 'Courier New', Courier, monospace;
 }
 
-/* Boxes */
+/* ============================================
+   BOXES (COMMAND AND LEADERBOARD)
+   ============================================ */
+
 .comando-box {
   border: 2px solid white;
   border-radius: 10px;
   padding: 20px;
   max-width: 350px;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.3); /* Semi-transparent background */
   color: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
   margin-top: 20px;
@@ -124,7 +136,7 @@ body {
 .comando-box h2 {
   font-size: 1.8rem;
   margin-bottom: 20px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Bottom border */
   padding-bottom: 10px;
 }
 
@@ -138,7 +150,7 @@ body {
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
-  transition: background 0.3s;
+  transition: background 0.3s; /* Smooth hover effect */
   cursor: pointer;
 }
 
@@ -146,29 +158,6 @@ body {
   background-color: rgba(255, 255, 255, 0.25);
 }
 
-/* Game panel */
-.game-panel {
-  position: absolute;
-  top: 73%;
-  left: 50.2%;
-  transform: translate(-50%, -50%);
-  margin: 30px auto;
-  width: 590px;
-  height: 500px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 2px solid white;
-  box-shadow: 0 8px 32px 0 rgba(32, 39, 138, 0.37);
-  border-radius: 15px;
-  padding: 30px;
-  text-align: center;
-  color: white;
-  font-family: 'Courier New', Courier, monospace;
-  z-index: 900;
-  animation: fadeIn 2s ease forwards;
-}
-
-/* Leaderboard */
 .leaderboard {
   border: 2px solid white;
   border-radius: 10px;
@@ -202,24 +191,24 @@ body {
   justify-content: space-between;
   align-items: center;
   font-weight: 500;
-  transition: transform 0.2s ease;
+  transition: transform 0.2s ease; /* Scale animation on hover */
 }
 
 .leaderboard li:hover {
-  transform: scale(1.05);
+  transform: scale(1.05); /* Slight zoom effect */
   background: rgba(255, 255, 255, 0.25);
 }
 
 .rank {
   font-size: 1.2rem;
   font-weight: bold;
-  color: #ffd700;
+  color: #ffd700; /* Gold color for ranks */
   width: 30px;
   text-align: left;
 }
 
 .name {
-  flex-grow: 1;
+  flex-grow: 1; /* Takes available space */
   text-align: left;
   padding-left: 10px;
 }
@@ -228,11 +217,15 @@ body {
   font-weight: bold;
 }
 
-.leaderboard li:nth-child(1) .rank { color: gold; }
-.leaderboard li:nth-child(2) .rank { color: silver; }
-.leaderboard li:nth-child(3) .rank { color: #cd7f32; }
+/* Different colors for top 3 ranks */
+.leaderboard li:nth-child(1) .rank { color: gold; } /* 1st place */
+.leaderboard li:nth-child(2) .rank { color: silver; } /* 2nd place */
+.leaderboard li:nth-child(3) .rank { color: #cd7f32; } /* 3rd place (bronze) */
 
-/* Fade-in animation */
+/* ============================================
+   GAME PANEL
+   ============================================ */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -241,5 +234,482 @@ body {
   to {
     opacity: 1;
     transform: translate(-50%, -50%);
+  }
+}
+
+@keyframes panelFadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.9); /* Starts slightly smaller */
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.game-panel {
+  position: absolute;
+  top: 73%;
+  left: 47%;
+  transform: translate(-50%, -50%); /* Perfect centering */
+  margin: 30px auto;
+  width: 750px;
+  height: 680px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px); /* Glass morphism effect */
+  border: 2px solid white;
+  box-shadow: 0 8px 32px 0 rgba(32, 39, 138, 0.37);
+  border-radius: 15px;
+  padding: 40px;
+  text-align: center;
+  color: white;
+  font-family: 'Courier New', Courier, monospace;
+  z-index: 900; /* High z-index to appear above other elements */
+  animation: panelFadeIn 0.4s ease forwards;
+}
+
+/* ============================================
+   CONFIGURATION AND CONTROL BUTTONS
+   ============================================ */
+
+.size-buttons,
+.level-buttons,
+.player-buttons,
+.mode-buttons,
+.welcome-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Space between buttons */
+  margin: 30px 0;
+}
+
+.size-btn,
+.level-btn,
+.player-btn,
+.mode-btn,
+.start-btn,
+.back-btn,
+.rankings-btn {
+  padding: 15px 25px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth transitions */
+  backdrop-filter: blur(5px); /* Subtle blur effect */
+}
+
+.size-btn:hover,
+.level-btn:hover,
+.player-btn:hover,
+.mode-btn:hover,
+.start-btn:hover,
+.rankings-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn {
+  background: rgba(200, 50, 50, 0.3); /* Red tint for back button */
+  margin-top: 20px;
+}
+
+.back-btn:hover {
+  background: rgba(200, 50, 50, 0.5);
+}
+
+/* ============================================
+   GAME INFO
+   ============================================ */
+
+.game-info {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 25px 0;
+  text-align: left;
+}
+
+.game-info p {
+  margin: 8px 0;
+  font-size: 1rem;
+}
+
+.game-info strong {
+  color: #ffd700; /* Gold color for emphasis */
+}
+
+.game-info p:first-child {
+  font-size: 1.2rem;
+  padding: 8px;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 5px;
+  border-left: 4px solid #ffd700; /* Accent border */
+}
+
+/* ============================================
+   DICE
+   ============================================ */
+
+.dice-area {
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+#roll-dice {
+  width: 120px;
+  height: 120px;
+  font-size: 2.5rem;
+  border-radius: 15px;
+  border: 3px solid white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Purple gradient */
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+#roll-dice:hover:not(:disabled) {
+  transform: scale(1.1) rotate(5deg); /* Scale and rotate on hover */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+}
+
+#roll-dice:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #888 0%, #555 100%); /* Gray when disabled */
+}
+
+.dice-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for readability */
+}
+
+/* ============================================
+   GAME BOARD
+   ============================================ */
+
+.board {
+  margin: 30px 0;
+  overflow-x: auto; /* Horizontal scroll for small screens */
+}
+
+.board::after {
+  content: '→ Lines 1 and 3: left → right | ← lines 2 and 4: right → left';
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.game-board {
+  border-collapse: collapse;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.game-board td {
+  width: 50px;
+  height: 50px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  text-align: center;
+  vertical-align: middle;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.game-board td:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05); /* Slight scale on hover */
+}
+
+.game-board td.player1-piece {
+  background: rgba(59, 130, 246, 0.3); /* Blue for player 1 */
+}
+
+.game-board td.player2-piece {
+  background: rgba(239, 68, 68, 0.3); /* Red for player 2 */
+}
+
+.game-board td.selected {
+  background: rgba(250, 204, 21, 0.5); /* Yellow for selected */
+  box-shadow: 0 0 20px rgba(250, 204, 21, 0.8);
+  border-color: #fbbf24;
+  animation: pulse 1s infinite; /* Pulsing animation */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Pulsing effect */
+  }
+}
+
+/* ============================================
+   GAME CONTROLS
+   ============================================ */
+
+.game-controls {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  flex-wrap: wrap; /* Wrap on small screens */
+}
+
+.game-controls button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 2px solid white;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.game-controls button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.35);
+  transform: translateY(-2px);
+}
+
+.game-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+#pass-turn {
+  background: rgba(251, 191, 36, 0.3); /* Yellow for pass turn */
+}
+
+#pass-turn:hover:not(:disabled) {
+  background: rgba(251, 191, 36, 0.5);
+}
+
+#forfeit {
+  background: rgba(239, 68, 68, 0.3); /* Red for forfeit */
+}
+
+#forfeit:hover {
+  background: rgba(239, 68, 68, 0.5);
+}
+
+#new-game {
+  background: rgba(34, 197, 94, 0.3); /* Green for new game */
+}
+
+#new-game:hover {
+  background: rgba(34, 197, 94, 0.5);
+}
+
+/* ============================================
+   RANKINGS
+   ============================================ */
+
+.rankings-list {
+  margin: 20px 0;
+  max-height: 300px;
+  overflow-y: auto; /* Scrollable rankings */
+}
+
+.rankings-list table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.rankings-list th {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.rankings-list td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rankings-list tr:hover {
+  background: rgba(255, 255, 255, 0.15); /* Row highlight on hover */
+}
+
+/* Custom scrollbar styling */
+.rankings-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rankings-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.rankings-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+}
+
+.rankings-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ============================================
+   LOGIN FORM
+   ============================================ */
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.login-form label {
+  text-align: left;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.login-form input {
+  padding: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+}
+
+.login-form input::placeholder {
+  color: rgba(255, 255, 255, 0.6); /* Placeholder styling */
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #ffd700; /* Gold border on focus */
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.login-form button {
+  padding: 12px;
+  background: rgba(34, 197, 94, 0.4); /* Green submit button */
+  border: 2px solid white;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-form button:hover {
+  background: rgba(34, 197, 94, 0.6);
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   GAME MESSAGES
+   ============================================ */
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px); /* Slides in from right */
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.game-message {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid white;
+  border-radius: 10px;
+  color: white;
+  font-weight: bold;
+  z-index: 1000; /* Very high z-index */
+  animation: slideIn 0.3s ease;
+}
+
+/* ============================================
+   VICTORY EFFECT
+   ============================================ */
+
+@keyframes victoryPulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.5); /* Green glow */
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(34, 197, 94, 0.8);
+  }
+}
+
+.victory-effect {
+  animation: victoryPulse 0.5s ease infinite; /* Continuous pulsing */
+}
+
+/* ============================================
+   RESPONSIVENESS
+   ============================================ */
+
+@media (max-width: 768px) {
+  .game-panel {
+    width: 95%;
+    padding: 15px;
+    top: 50%;
+  }
+
+  .game-board td {
+    width: 35px;
+    height: 35px;
+    font-size: 1.5rem; /* Smaller on mobile */
+  }
+
+  #roll-dice {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+  }
+
+  .game-controls {
+    flex-direction: column; /* Stack buttons vertically */
+  }
+
+  .game-controls button {
+    width: 100%; /* Full width buttons */
+  }
+
+  .main-content {
+    flex-direction: column; /* Stack columns */
+  }
+
+  .left-column,
+  .right-column {
+    width: 100%; /* Full width on mobile */
   }
 }
