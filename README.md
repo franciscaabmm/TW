@@ -5,8 +5,16 @@ Implementação completa do jogo tradicional Tâb em JavaScript vanilla, HTML e 
 ## 📁 Estrutura de Ficheiros
 
 A estrutura de ficheiros real do projeto é a seguinte:
+```
+projeto/
+├── index.html              
+├── style.css              
+├── js/
+│   └── app.js            
+└── images/
+    └── avatar.jpg        
+```
 
-projeto/ ├── index.html (O HTML principal da aplicação) ├── style.css (A folha de estilos principal) ├── js/ │ └── app.js (JavaScript principal com a lógica do jogo) └── images/ └── tab.jpg (Imagem do logotipo usada no header)
 
 
 ## 🚀 Instalação
