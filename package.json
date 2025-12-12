@@ -1,0 +1,27 @@
+{
+  "name": "tab-server",
+  "version": "1.0.0",
+  "description": "Servidor Node.js para o jogo Tâb - Trabalho de Tecnologias Web",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node test.js"
+  },
+  "keywords": [
+    "tab",
+    "game",
+    "board-game",
+    "server",
+    "nodejs"
+  ],
+  "author": "Grupo 37",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {}
+}
