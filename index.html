@@ -1,122 +1,233 @@
 <!DOCTYPE html>
-<html lang="pt"> 
+<html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Game-Tâb</title> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Jogo de tabuleiro tradicional Tâb - Versão online multiplayer">
+  <title>Jogo Tâb - Online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Fonte Inter com suporte Latin estendido para português -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap&subset=latin-ext" rel="stylesheet">
+  <!-- Fonte alternativa para melhor suporte de caracteres portugueses -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons - Biblioteca de ícones bonitos e consistentes -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <!-- Ícone do site -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
 </head>
-
 <body>
-  <!-- Main Header with animated title -->
-  <header class="title-container animated-title">
-    <h1>Welcome to the Game!</h1>
-    <!-- logo -->
-    <img 
-      class="Tab" 
-      src="images/tab.jpg" 
-      alt="Tâb" 
-      loading="lazy"  
-    >
-  </header>
+  <div class="container">
+    <!-- Painel esquerdo -->
+    <aside class="sidebar">
+      <!-- Logótipo -->
+      <div class="logo-section">
+        <div class="logo-icon"><i data-lucide="dices"></i></div>
+        <h1>Tâb</h1>
+        <p>Jogo de Tabuleiro Tradicional</p>
+      </div>
 
-  <!-- Main -->
-  <main class="main-content">
-    <!-- Left Column - Game information and settings -->
-    <aside class="left-column">
-      <!-- Game Rules section -->
-      <section class="comando-box" aria-labelledby="game-rules-title">
-        <h2 id="game-rules-title">🎯 Game Rules</h2>
-        <ul class="rules">
-          <li>🧍 Each player starts with a piece in each column on a row.</li>
-          <li>🎲 The possible moves are determined by 4 dice that influence the play.</li> 
-          <li>🏁 Move forward and capture the opponent's pieces!</li> 
-        </ul>
-      </section>
+      <!-- Área de identificação -->
+      <div class="panel login-panel" id="login-panel">
+        <h2><i data-lucide="lock-keyhole"></i> Identificação</h2>
+        <form id="login-form">
+          <div class="form-group">
+            <label for="nick">Nick:</label>
+            <input type="text" id="nick" placeholder="Seu nome" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" placeholder="Senha" required>
+          </div>
+          <button type="submit" class="btn btn-primary"><i data-lucide="log-in"></i> Entrar / Registar</button>
+        </form>
+        <div id="user-info" class="hidden">
+          <p><i data-lucide="user"></i> Bem-vindo, <strong id="user-nick"></strong></p>
+          <button id="logout-btn" class="btn btn-secondary"><i data-lucide="log-out"></i> Terminar Sessão</button>
+        </div>
+      </div>
 
-      <!-- Game Settings section -->
-      <section class="comando-box" aria-labelledby="settings-title">
-        <h2 id="settings-title">⚙️ Settings</h2> 
-        <ul>
-          <li>📏 Board Size</li>
-          <li>🤖 Artificial Intelligence Level</li>
-          <li>🙋‍♂️ First Player to Play</li>
-          <li>⏭️ Player VS Computer</li>
-          <li>▶️ Player VS Player</li>
-        </ul>
-      </section>
+      <!-- Área de configuração -->
+      <div class="panel config-panel">
+        <h2><i data-lucide="settings"></i> Configuração</h2>
+        <div class="config-item">
+          <label>Grupo (ID):</label>
+          <input type="number" id="group-id" value="99" min="1" max="999">
+        </div>
+        <div class="config-item">
+          <label>Tamanho do Tabuleiro:</label>
+          <select id="board-size">
+            <option value="7">7 colunas</option>
+            <option value="9" selected>9 colunas</option>
+            <option value="11">11 colunas</option>
+            <option value="13">13 colunas</option>
+            <option value="15">15 colunas</option>
+          </select>
+        </div>
+        <div class="config-item">
+          <label>Modo de Jogo:</label>
+          <select id="game-mode">
+            <option value="online">Jogador vs Jogador (Online)</option>
+            <option value="ai">Jogador vs Computador</option>
+          </select>
+        </div>
+        <div class="config-item ai-config">
+          <label>Nível da IA:</label>
+          <select id="ai-level">
+            <option value="easy">Fácil</option>
+            <option value="medium" selected>Médio</option>
+            <option value="hard">Difícil</option>
+          </select>
+        </div>
+        <div class="config-item ai-config">
+          <label>Primeiro Jogador:</label>
+          <select id="first-player">
+            <option value="player">Você</option>
+            <option value="ai">Computador</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Área de comandos -->
+      <div class="panel commands-panel">
+        <h2><i data-lucide="gamepad-2"></i> Comandos</h2>
+        <button id="start-game" class="btn btn-success"><i data-lucide="play"></i> Iniciar Jogo</button>
+        <button id="forfeit-game" class="btn btn-danger" disabled><i data-lucide="flag"></i> Desistir</button>
+        <button id="show-rankings" class="btn btn-info"><i data-lucide="trophy"></i> Classificações</button>
+      </div>
     </aside>
 
-    <!-- Right Column - User interactions and rankings -->
-    <section class="right-column">
-      <!-- Game Commands section -->
-      <section class="comando-box" aria-labelledby="commands-title">
-        <h2 id="commands-title">🕹️ Commands</h2>
-        <ul>
-          <li>📖 Choose a mode</li>
-          <li>🏳️ Quit the game</li>
-          <li>📊 View the Rankings</li> 
-        </ul>
-      </section>
+    <!-- Área principal do jogo -->
+    <main class="game-area">
+      <!-- Informações do jogo -->
+      <div class="game-header">
+        <div class="player-info player1-info">
+          <span class="player-color blue"></span>
+          <span id="player1-name">Azul</span>
+          <span id="player1-pieces" class="piece-count">9</span>
+        </div>
+        <div class="turn-indicator" id="turn-indicator">
+          A aguardar...
+        </div>
+        <div class="player-info player2-info">
+          <span id="player2-pieces" class="piece-count">9</span>
+          <span id="player2-name">Vermelho</span>
+          <span class="player-color red"></span>
+        </div>
+      </div>
 
-      <!-- User Login -->
-      <section class="comando-box" aria-labelledby="login-title">
-        <h2 id="login-title">🔐 Login</h2>
+      <!-- Canvas do tabuleiro -->
+      <div class="canvas-container">
+        <canvas id="game-canvas"></canvas>
+        <div id="welcome-screen" class="welcome-screen">
+          <h2><i data-lucide="dices" class="welcome-icon"></i> Bem-vindo ao Tâb!</h2>
+          <p>Faça login e clique em "Iniciar Jogo" para começar.</p>
+        </div>
+      </div>
 
-        <form class="login-form" method="post" action="/login">
-          <label for="username">Username:</label>
-          <input 
-            id="username" 
-            name="username" 
-            type="text" 
-            placeholder="Enter your username" 
-            autocomplete="username" 
-          >
+      <!-- Área do dado -->
+      <div class="dice-section">
+        <div class="sticks-display" id="sticks-display">
+          <div class="stick" data-index="0"></div>
+          <div class="stick" data-index="1"></div>
+          <div class="stick" data-index="2"></div>
+          <div class="stick" data-index="3"></div>
+        </div>
+        <div class="dice-info">
+          <span id="dice-value">-</span>
+          <span id="dice-name"></span>
+        </div>
+        <button id="roll-dice" class="btn btn-roll" disabled><i data-lucide="dices"></i> Lançar Dado</button>
+        <button id="pass-turn" class="btn btn-pass" disabled><i data-lucide="skip-forward"></i> Passar Vez</button>
+      </div>
+
+      <!-- Área de mensagens -->
+      <div class="panel messages-panel">
+        <h2><i data-lucide="message-square"></i> Mensagens</h2>
+        <div class="message-list" id="message-list"></div>
+      </div>
+    </main>
+
+    <!-- Painel direito -->
+    <aside class="sidebar right-sidebar">
+      <!-- Área de instruções -->
+      <div class="panel instructions-panel" id="instructions-panel">
+        <h2><i data-lucide="book-open"></i> Instruções</h2>
+        <div class="instructions-content">
+          <p><strong>Objetivo:</strong> Capturar todas as peças do adversário.</p>
           
-          <label for="password">Password:</label>
-          <input 
-            id="password" 
-            name="password" 
-            type="password" 
-            placeholder="Enter your password" 
-            autocomplete="current-password" 
-          >
+          <p><strong>Como Jogar:</strong></p>
+          <ol>
+            <li>Lance o dado de paus</li>
+            <li>Selecione uma peça para mover</li>
+            <li>Clique no destino</li>
+          </ol>
           
-          <button type="submit">Login</button>
-        </form>
-      </section>
+          <p><strong>Regras Especiais:</strong></p>
+          <ul>
+            <li>Peças não movidas só podem mover com <strong>1 (Tâb)</strong></li>
+            <li>Peças na última linha só podem mover quando todas as outras já saíram da base</li>
+          </ul>
+          
+          <p><strong>Dado de Paus:</strong></p>
+          <table class="dice-table">
+            <tr><th>Valor</th><th>Nome</th><th>Repete</th></tr>
+            <tr><td>1</td><td>Tâb</td><td>✓</td></tr>
+            <tr><td>2</td><td>Itneyn</td><td>✗</td></tr>
+            <tr><td>3</td><td>Teláteh</td><td>✗</td></tr>
+            <tr><td>4</td><td>Arba'ah</td><td>✓</td></tr>
+            <tr><td>6</td><td>Sitteh</td><td>✓</td></tr>
+          </table>
+        </div>
+      </div>
 
-      <!-- Leaderboard section showing player rankings -->
-      <section class="leaderboard" aria-labelledby="leaderboard-title">
-        <h2 id="leaderboard-title">🏆 Leaderboard</h2>
-        <table>
+      <!-- Área de classificações -->
+      <div class="panel rankings-panel hidden" id="rankings-panel">
+        <h2><i data-lucide="trophy"></i> Classificações</h2>
+        <p class="rankings-info">Grupo: <span id="ranking-group">99</span> | Tamanho: <span id="ranking-size">9</span></p>
+        <table id="rankings-table">
           <thead>
             <tr>
-              <th>Rank</th>
-              <th>Name</th>
-              <th>W / L</th>  <!-- Wins / Losses -->
+              <th>#</th>
+              <th>Nick</th>
+              <th>Vitórias</th>
+              <th>Jogos</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- Sample leaderboard data -->
-            <tr><td>1</td><td>n1</td><td>10 / 2</td></tr>
-            <tr><td>2</td><td>n2</td><td>8 / 3</td></tr>
-            <tr><td>3</td><td>n3</td><td>7 / 4</td></tr>
-            <tr><td>4</td><td>n4</td><td>5 / 5</td></tr>
-            <tr><td>5</td><td>n5</td><td>3 / 6</td></tr>
-          </tbody>
+          <tbody></tbody>
         </table>
-      </section>
-    </section>
-  </main>
+        <button id="close-rankings" class="btn btn-secondary"><i data-lucide="arrow-left"></i> Voltar</button>
+      </div>
+    </aside>
+  </div>
 
-  <!-- Game Panel - Main game interface -->
-  <section class="game-panel" aria-labelledby="game-panel-title">
-    <h2 id="game-panel-title">🧩 Game Panel</h2>
-    <p>Prepare to play!</p>
-  </section>
+  <!-- Modal de fim de jogo -->
+  <div class="modal hidden" id="game-over-modal">
+    <div class="modal-content">
+      <h2 id="winner-text"><i data-lucide="crown" class="winner-icon"></i> Vencedor!</h2>
+      <p id="winner-name"></p>
+      <button id="play-again" class="btn btn-primary"><i data-lucide="rotate-ccw"></i> Jogar Novamente</button>
+    </div>
+  </div>
 
-  <!-- JavaScript application file -->
-  <script src="js/app.js"></script>
+  <!-- Modal de espera -->
+  <div class="modal hidden" id="waiting-modal">
+    <div class="modal-content">
+      <h2><i data-lucide="loader-circle" class="spinning"></i> Aguardando Adversário...</h2>
+      <p>Procurando jogador com as mesmas configurações...</p>
+      <p class="waiting-info">Grupo: <span id="waiting-group"></span> | Tamanho: <span id="waiting-size"></span></p>
+      <div class="spinner"></div>
+      <button id="cancel-waiting" class="btn btn-secondary"><i data-lucide="x"></i> Cancelar</button>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <!-- Inicializar Ícones Lucide -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+    });
+  </script>
 </body>
 </html>
