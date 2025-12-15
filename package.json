@@ -1,13 +1,27 @@
 {
   "name": "tab-game-server",
   "version": "1.0.0",
-  "description": "Tâb Game Local Server",
-  "main": "server.js",
+  "description": "Servidor Node.js para o jogo Tâb - Entrega 3",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "node test/test-server.js"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+  "keywords": [
+    "tab",
+    "game",
+    "board-game",
+    "server",
+    "nodejs"
+  ],
+  "author": "Grupo 37",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "nodemon": "^3.0.0"
   }
 }

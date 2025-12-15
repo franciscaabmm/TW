@@ -1,34 +1,57 @@
-/* ============================================
-   Jogo Tâb - Interface Glassmorphism Moderna
-   Inspirado em designs modernos de jogos
-   Melhorado com efeitos neon e animações
-   ============================================ */
+/* ==========================================================================
+   JOGO TÂB - INTERFACE GLASSMORPHISM MODERNA
+   ==========================================================================
+   • Estilo visual: Dark Mode com efeitos Neon e Glassmorphism (Vidro Fosco).
+   • Paleta: Tons escuros de azul/preto com acentos vibrantes (Ciano, Ouro, Vermelho).
+   • Responsividade: Adaptável para Desktop, Tablet e Mobile.
+   • Animações: Uso intensivo de keyframes para feedback visual e imersão.
+   ========================================================================== */
 
+/* ============================================
+   1. Variáveis Globais (CSS Custom Properties)
+   ============================================ */
 :root {
-  --bg-1: #0a0e17;
-  --bg-2: #0f1724;
+  /* -- Paleta de Fundo -- */
+  --bg-1: #0a0e17; /* Fundo principal escuro */
+  --bg-2: #0f1724; /* Variação para gradientes */
+
+  /* -- Efeitos de Vidro (Transparência) -- */
   --glass: rgba(255, 255, 255, 0.06);
   --glass-2: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --accent: #3654ff;
-  --accent-2: #45f3ff;
-  --accent-glow: rgba(54, 84, 255, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.1); /* Borda subtil para definir limites */
+
+  /* -- Cores de Acento e Neon -- */
+  --accent: #3654ff;      /* Azul primário */
+  --accent-2: #45f3ff;    /* Ciano vibrante */
+  --accent-glow: rgba(54, 84, 255, 0.4); /* Brilho do acento principal */
+
   --neon-blue: #45f3ff;
   --neon-blue-glow: rgba(69, 243, 255, 0.5);
+
+  /* -- Tipografia -- */
   --muted: rgba(255, 255, 255, 0.6);
-  --text-primary: #e9f0f6;
-  --text-secondary: #8b949e;
+  --text-primary: #e9f0f6;   /* Texto principal (quase branco) */
+  --text-secondary: #8b949e; /* Texto secundário (cinza) */
+
+  /* -- Identidade dos Jogadores (Peças) -- */
   --blue-piece: #00d4ff;
   --blue-glow: rgba(0, 212, 255, 0.5);
   --red-piece: #ff4757;
   --red-glow: rgba(255, 71, 87, 0.5);
+
+  /* -- Elementos Especiais (Dados/Vitória) -- */
   --gold: #ffd700;
   --gold-glow: rgba(255, 215, 0, 0.4);
-  --success: #3fb950;
-  --warning: #d29922;
-  --danger: #ff6b6b;
+
+  /* -- Estados de Feedback -- */
+  --success: #3fb950; /* Verde para sucesso/minha vez */
+  --warning: #d29922; /* Amarelo para avisos/vez do oponente */
+  --danger: #ff6b6b;  /* Vermelho para erros/ações destrutivas */
 }
 
+/* ============================================
+   2. Reset e Configurações Base
+   ============================================ */
 * {
   margin: 0;
   padding: 0;
@@ -41,19 +64,21 @@ html, body {
 
 body {
   font-family: 'Inter', 'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased; /* Suavização de fonte para Webkit */
+  -moz-osx-font-smoothing: grayscale;  /* Suavização de fonte para Firefox */
   background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
-  /* Garantir que caracteres especiais do português são exibidos corretamente */
+  
+  /* Melhoria de tipografia e renderização de caracteres */
   font-feature-settings: "kern" 1, "liga" 1;
   text-rendering: optimizeLegibility;
   letter-spacing: 0.01em;
 }
 
-/* Gradiente de fundo animado */
+/* -- Fundo Ambiental Animado -- 
+   Cria "bolhas" de luz subtis atrás do conteúdo */
 body::before {
   content: '';
   position: fixed;
@@ -68,8 +93,12 @@ body::before {
   z-index: -1;
 }
 
+/* ============================================
+   3. Layout Principal (Grid System)
+   ============================================ */
 .container {
   display: grid;
+  /* Layout de 3 colunas: Sidebar Esq | Jogo Central | Sidebar Dir */
   grid-template-columns: 260px 1fr 260px;
   min-height: 100vh;
   gap: 16px;
@@ -79,19 +108,20 @@ body::before {
 }
 
 /* ============================================
-   Base do Painel de Vidro
+   4. Componentes de Vidro (Glassmorphism)
    ============================================ */
+/* Classe utilitária para efeito de vidro fosco */
 .glass {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   border: 1px solid var(--glass-border);
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px); /* O "blur" que cria o efeito de vidro */
 }
 
 /* ============================================
-   Barra Lateral
+   5. Barra Lateral e Logótipo
    ============================================ */
 .sidebar {
   display: flex;
@@ -99,7 +129,7 @@ body::before {
   gap: 12px;
 }
 
-/* Secção do Logo */
+/* -- Efeitos Especiais do Logo -- */
 .logo-section {
   text-align: center;
   padding: 24px 16px;
@@ -110,6 +140,7 @@ body::before {
   overflow: hidden;
 }
 
+/* Animação de brilho rotativo atrás do logo */
 .logo-section::before {
   content: '';
   position: absolute;
@@ -135,7 +166,7 @@ body::before {
   font-size: 3.5rem;
   margin-bottom: 8px;
   filter: drop-shadow(0 0 20px var(--gold-glow));
-  animation: float 3s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite; /* Movimento flutuante suave */
 }
 
 @keyframes float {
@@ -143,6 +174,7 @@ body::before {
   50% { transform: translateY(-6px); }
 }
 
+/* Texto Dourado com efeito "Shimmer" (Brilho que passa) */
 .logo-section h1 {
   font-size: 2.2rem;
   font-weight: 700;
@@ -167,9 +199,8 @@ body::before {
   letter-spacing: 0.5px;
 }
 
-
 /* ============================================
-   Painéis
+   6. Painéis Genéricos
    ============================================ */
 .panel {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
@@ -192,8 +223,9 @@ body::before {
 }
 
 /* ============================================
-   Painel de Login
+   7. Formulários e Inputs
    ============================================ */
+/* Painel de Login */
 .login-panel .form-group {
   margin-bottom: 12px;
 }
@@ -217,6 +249,7 @@ body::before {
   transition: all 0.2s ease;
 }
 
+/* Estado de foco com brilho neon */
 .login-panel input:focus {
   outline: none;
   border-color: var(--neon-blue);
@@ -243,9 +276,7 @@ body::before {
   color: var(--accent-2);
 }
 
-/* ============================================
-   Painel de Configuração
-   ============================================ */
+/* Painel de Configuração */
 .config-item {
   margin-bottom: 12px;
 }
@@ -279,7 +310,7 @@ body::before {
 }
 
 .config-item select option {
-  background: var(--bg-1);
+  background: var(--bg-1); /* Garante legibilidade no dropdown */
   color: var(--text-primary);
 }
 
@@ -299,7 +330,7 @@ body::before {
 }
 
 /* ============================================
-   Botões
+   8. Botões e Ações
    ============================================ */
 .btn {
   padding: 12px 16px;
@@ -328,13 +359,14 @@ body::before {
 }
 
 .btn:not(:disabled):hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px); /* Efeito de levitação ao passar o rato */
 }
 
 .btn:not(:disabled):active {
   transform: translateY(0);
 }
 
+/* Botão Primário (Login/Ação Principal) */
 .btn-primary {
   background: linear-gradient(180deg, var(--accent), #2a43cc);
   color: white;
@@ -344,6 +376,7 @@ body::before {
   overflow: hidden;
 }
 
+/* Efeito de brilho que passa pelo botão ao hover */
 .btn-primary::before {
   content: '';
   position: absolute;
@@ -374,6 +407,7 @@ body::before {
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* Cores Semânticas */
 .btn-success {
   background: linear-gradient(180deg, var(--success), #2ea043);
   color: white;
@@ -392,9 +426,10 @@ body::before {
   box-shadow: 0 4px 15px var(--blue-glow);
 }
 
+/* -- Botão Especial "Lançar Dados" -- */
 .btn-roll {
   background: linear-gradient(180deg, var(--gold), #ffaa00);
-  color: #1a1a2e;
+  color: #1a1a2e; /* Contraste escuro para fundo dourado */
   font-weight: 700;
   font-size: 1rem;
   padding: 14px 24px;
@@ -403,7 +438,7 @@ body::before {
   border: 2px solid var(--gold);
   position: relative;
   overflow: hidden;
-  animation: rollButtonPulse 2s ease-in-out infinite;
+  animation: rollButtonPulse 2s ease-in-out infinite; /* Pulso para chamar atenção */
 }
 
 @keyframes rollButtonPulse {
@@ -429,7 +464,7 @@ body::before {
 .btn-roll:not(:disabled):hover {
   box-shadow: 0 6px 35px var(--gold-glow), 0 0 50px var(--gold-glow);
   transform: translateY(-3px) scale(1.05);
-  animation: none;
+  animation: none; /* Para a animação de pulso ao interagir */
 }
 
 .btn-pass {
@@ -439,9 +474,8 @@ body::before {
   padding: 12px 20px;
 }
 
-
 /* ============================================
-   Área do Jogo
+   9. Área Central do Jogo
    ============================================ */
 .game-area {
   display: flex;
@@ -449,7 +483,7 @@ body::before {
   gap: 12px;
 }
 
-/* Cabeçalho do Jogo */
+/* Cabeçalho (Status dos Jogadores) */
 .game-header {
   display: flex;
   justify-content: space-between;
@@ -466,6 +500,7 @@ body::before {
   gap: 12px;
 }
 
+/* Indicadores de Cor do Jogador com Efeito Neon */
 .player-color {
   width: 20px;
   height: 20px;
@@ -523,6 +558,7 @@ body::before {
   text-align: center;
 }
 
+/* Indicador de Turno Ativo */
 .turn-indicator {
   background: rgba(255, 255, 255, 0.06);
   padding: 10px 20px;
@@ -560,7 +596,7 @@ body::before {
 }
 
 /* ============================================
-   Contentor do Canvas
+   10. Canvas e Ecrã de Boas-vindas
    ============================================ */
 .canvas-container {
   flex: 1;
@@ -581,7 +617,7 @@ body::before {
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 0 60px rgba(54, 84, 255, 0.15);
+    0 0 60px rgba(54, 84, 255, 0.15); /* Glow ambiente em volta do tabuleiro */
   transition: box-shadow 0.3s ease;
 }
 
@@ -592,6 +628,7 @@ body::before {
     0 0 80px rgba(54, 84, 255, 0.25);
 }
 
+/* Overlay de Boas-vindas */
 .welcome-screen {
   position: absolute;
   inset: 0;
@@ -627,7 +664,7 @@ body::before {
 }
 
 /* ============================================
-   Secção do Dado
+   11. Secção de Dados (Sticks)
    ============================================ */
 .dice-section {
   display: flex;
@@ -657,24 +694,27 @@ body::before {
   transform: translateY(-2px);
 }
 
+/* Visual 3D dos "paus" (dados do jogo) */
 .stick {
   width: 14px;
   height: 60px;
-  background: linear-gradient(180deg, #8B4513, #5D3A1A);
+  background: linear-gradient(180deg, #8B4513, #5D3A1A); /* Cor de madeira escura */
   border-radius: 7px;
   transition: all 0.3s ease;
   transform-style: preserve-3d;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Face clara do pau (quando vale pontos) */
 .stick.light {
-  background: linear-gradient(180deg, #F5DEB3, #DEB887);
+  background: linear-gradient(180deg, #F5DEB3, #DEB887); /* Cor de madeira clara */
   box-shadow: 
     0 4px 8px rgba(0, 0, 0, 0.3),
     0 0 20px rgba(245, 222, 179, 0.6),
-    0 0 40px rgba(245, 222, 179, 0.3);
+    0 0 40px rgba(245, 222, 179, 0.3); /* Brilho sagrado */
 }
 
+/* Animação de rotação ao lançar */
 .stick.rolling {
   animation: stickRoll 0.4s ease-out;
 }
@@ -692,6 +732,7 @@ body::before {
   min-width: 80px;
 }
 
+/* Valor numérico do dado em destaque */
 #dice-value {
   display: block;
   font-size: 2.5rem;
@@ -717,7 +758,7 @@ body::before {
 
 
 /* ============================================
-   Painel de Mensagens
+   12. Painel de Log e Mensagens
    ============================================ */
 .messages-panel {
   max-height: 150px;
@@ -732,6 +773,7 @@ body::before {
   padding-right: 4px;
 }
 
+/* Scrollbar personalizada fina */
 .message-list::-webkit-scrollbar {
   width: 4px;
 }
@@ -755,6 +797,7 @@ body::before {
   border-left: 3px solid transparent;
 }
 
+/* Variações de cor por tipo de mensagem */
 .message.info { 
   border-left-color: var(--accent); 
   background: rgba(1, 175, 255, 0.08);
@@ -784,7 +827,7 @@ body::before {
 }
 
 /* ============================================
-   Painel de Instruções
+   13. Painel de Instruções
    ============================================ */
 .instructions-content {
   font-size: 0.8rem;
@@ -810,6 +853,7 @@ body::before {
   margin-bottom: 4px;
 }
 
+/* Tabela explicativa dos dados */
 .dice-table {
   width: 100%;
   border-collapse: collapse;
@@ -841,7 +885,7 @@ body::before {
 }
 
 /* ============================================
-   Painel de Classificações
+   14. Painel de Classificações
    ============================================ */
 .rankings-info {
   font-size: 0.85rem;
@@ -874,21 +918,22 @@ body::before {
   letter-spacing: 0.5px;
 }
 
+/* Cores de Medalhas para Top 3 */
 #rankings-table tbody tr:first-child td {
   color: var(--gold);
   font-weight: 600;
 }
 
 #rankings-table tbody tr:nth-child(2) td {
-  color: #c0c0c0;
+  color: #c0c0c0; /* Prata */
 }
 
 #rankings-table tbody tr:nth-child(3) td {
-  color: #cd7f32;
+  color: #cd7f32; /* Bronze */
 }
 
 /* ============================================
-   Modal
+   15. Modais e Popups
    ============================================ */
 .modal {
   position: fixed;
@@ -953,7 +998,7 @@ body::before {
   margin: 12px 0;
 }
 
-/* Indicador de carregamento */
+/* Indicador de carregamento (Spinner) */
 .spinner {
   width: 48px;
   height: 48px;
@@ -968,7 +1013,7 @@ body::before {
   to { transform: rotate(360deg); }
 }
 
-/* Modal do Vencedor */
+/* Modal do Vencedor (Destaque Extra) */
 #winner-text {
   font-size: 2.5rem;
   background: linear-gradient(135deg, var(--gold), #ffaa00, var(--gold));
@@ -988,25 +1033,26 @@ body::before {
 }
 
 /* ============================================
-   Classes Utilitárias
+   16. Classes Utilitárias
    ============================================ */
 .hidden {
   display: none !important;
 }
 
 /* ============================================
-   Design Responsivo
+   17. Design Responsivo (Media Queries)
    ============================================ */
+/* Tablets e Ecrãs Pequenos (< 1100px) */
 @media (max-width: 1100px) {
   .container {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* Muda de 3 colunas para 1 pilha vertical */
     max-width: 700px;
     padding: 12px;
   }
   
   .sidebar {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, 1fr); /* Sidebar vira grid 2 colunas */
     gap: 12px;
   }
   
@@ -1030,6 +1076,7 @@ body::before {
   }
 }
 
+/* Mobile (< 600px) */
 @media (max-width: 600px) {
   .container {
     padding: 8px;
@@ -1078,7 +1125,7 @@ body::before {
   }
   
   .btn-roll, .btn-pass {
-    width: 100%;
+    width: 100%; /* Botões full-width em mobile */
   }
   
   .modal-content {
@@ -1089,21 +1136,23 @@ body::before {
 }
 
 /* ============================================
-   Animações para Elementos do Jogo
+   18. Animações de Gameplay
    ============================================ */
+/* Efeito ao capturar peça inimiga */
 @keyframes pieceCapture {
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.3); opacity: 0.5; }
   100% { transform: scale(0); opacity: 0; }
 }
 
+/* Efeito ao colocar peça no tabuleiro */
 @keyframes piecePlace {
   0% { transform: scale(0); }
   60% { transform: scale(1.1); }
   100% { transform: scale(1); }
 }
 
-/* Confete para vitória */
+/* Confete para celebração de vitória */
 .confetti {
   position: fixed;
   width: 10px;
@@ -1126,10 +1175,10 @@ body::before {
 }
 
 /* ============================================
-   Efeitos Neon Melhorados
+   19. Micro-interações e Efeitos de Estado
    ============================================ */
 
-/* Efeitos de hover do painel */
+/* Efeitos de hover nos painéis principais */
 .panel {
   transition: all 0.3s ease;
 }
@@ -1211,13 +1260,13 @@ body::before {
   50% { opacity: 0.7; }
 }
 
-/* Destaque de seleção para elementos ativos */
+/* Destaque de seleção de texto */
 ::selection {
   background: var(--accent);
   color: white;
 }
 
-/* Estilo da barra de rolagem */
+/* Estilo global da barra de rolagem (Scrollbar) */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -1237,13 +1286,13 @@ body::before {
   background: rgba(54, 84, 255, 0.6);
 }
 
-/* Foco visível para acessibilidade */
+/* Foco visível para acessibilidade (Teclado) */
 :focus-visible {
   outline: 2px solid var(--neon-blue);
   outline-offset: 2px;
 }
 
-/* Estilos de links */
+/* Estilos de links padrão */
 a {
   color: var(--neon-blue);
   text-decoration: none;
@@ -1255,7 +1304,7 @@ a:hover {
 }
 
 /* ============================================
-   Estilo dos Ícones Lucide
+   20. Configuração de Ícones (Biblioteca Lucide)
    ============================================ */
 
 /* Estilo base dos ícones */
@@ -1275,7 +1324,7 @@ a:hover {
   filter: drop-shadow(0 0 5px var(--neon-blue-glow));
 }
 
-/* Ícone do logo */
+/* Ícone do logo principal */
 .logo-icon [data-lucide] {
   width: 3rem;
   height: 3rem;
@@ -1283,7 +1332,7 @@ a:hover {
   filter: drop-shadow(0 0 15px var(--gold-glow));
 }
 
-/* Ícones dos botões */
+/* Ajuste de margem para ícones em botões */
 .btn [data-lucide] {
   width: 1.1em;
   height: 1.1em;
@@ -1299,7 +1348,7 @@ a:hover {
   margin-right: 0.5rem;
 }
 
-/* Ícone do vencedor */
+/* Ícone da coroa do vencedor */
 .winner-icon {
   width: 2.5rem !important;
   height: 2.5rem !important;
@@ -1313,64 +1362,37 @@ a:hover {
   50% { transform: translateY(-5px) rotate(5deg); }
 }
 
-/* Animação de rotação para carregamento */
+/* Classe utilitária para rotação contínua */
 .spinning {
   animation: spin 1.5s linear infinite;
 }
 
-/* Ícone de informação do utilizador */
+/* Definições de cores de ícones por contexto */
 #user-info [data-lucide] {
   color: var(--accent-2);
   margin-right: 0.3em;
 }
 
-/* Ícones do botão de sucesso */
-.btn-success [data-lucide] {
-  color: white;
-}
-
-/* Ícones do botão de perigo */
-.btn-danger [data-lucide] {
-  color: white;
-}
-
-/* Ícones do botão de informação */
-.btn-info [data-lucide] {
-  color: white;
-}
-
-/* Ícone do botão de lançar */
-.btn-roll [data-lucide] {
-  color: #1a1a2e;
-}
-
-/* Ícone do botão de passar */
-.btn-pass [data-lucide] {
-  color: #1a1a2e;
-}
-
-/* Ícones do botão secundário */
-.btn-secondary [data-lucide] {
-  color: var(--text-primary);
-}
-
-/* Ícones do botão primário */
-.btn-primary [data-lucide] {
-  color: white;
-}
+.btn-success [data-lucide] { color: white; }
+.btn-danger [data-lucide] { color: white; }
+.btn-info [data-lucide] { color: white; }
+.btn-roll [data-lucide] { color: #1a1a2e; }
+.btn-pass [data-lucide] { color: #1a1a2e; }
+.btn-secondary [data-lucide] { color: var(--text-primary); }
+.btn-primary [data-lucide] { color: white; }
 
 /* ============================================
-   Estilo Personalizado do Input Numérico
-   Ocultar spinner padrão e criar design personalizado
+   21. Estilização de Inputs Numéricos
    ============================================ */
 
-/* Ocultar spinner padrão do input numérico */
+/* Ocultar setas padrão do browser (Chrome, Safari, Edge, Opera) */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
+/* Ocultar setas padrão do browser (Firefox) */
 input[type="number"] {
   -moz-appearance: textfield;
   appearance: textfield;
@@ -1381,7 +1403,7 @@ input[type="number"] {
   position: relative;
 }
 
-/* Estilizar o input numérico para parecer com outros inputs */
+/* Estilizar o input numérico para alinhar com o design */
 .config-item input[type="number"] {
   padding-right: 40px;
   text-align: center;
@@ -1390,7 +1412,7 @@ input[type="number"] {
   letter-spacing: 0.5px;
 }
 
-/* Contentor de botões spinner personalizados */
+/* Contentor de botões spinner personalizados (Setas customizadas) */
 .number-input-wrapper {
   position: relative;
   display: flex;
@@ -1433,7 +1455,7 @@ input[type="number"] {
   bottom: 4px;
 }
 
-/* Alternativa: Input limpo e simples sem spinner */
+/* Estilo alternativo para ID do Grupo */
 #group-id {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
   border: 2px solid var(--glass-border);
@@ -1457,7 +1479,7 @@ input[type="number"] {
   color: white;
 }
 
-/* Melhoria do estilo do dropdown select */
+/* Melhoria do estilo do dropdown select com ícone SVG personalizado */
 .config-item select {
   -webkit-appearance: none;
   -moz-appearance: none;

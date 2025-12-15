@@ -1,488 +1,533 @@
 // ============================================
-// INDEX.JS - SERVIDOR NODE.JS PRINCIPAL
+// INDEX.JS - Servidor HTTP Principal (Node.js)
+// ============================================
+// Ponto de entrada da aplicação Backend.
+// Configura o servidor HTTP nativo, define rotas da API REST,
+// inicializa módulos e gere conexões SSE.
 // ============================================
 
 const http = require('http');
-const url = require('url');
-const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
-// Importar módulos
-const { UserManager } = require('./user-manager');
-const { GameManager } = require('./game-manager');
-const { RankingManager } = require('./ranking-manager');
-const { SSEManager } = require('./sse-manager');
+// Importação dos Módulos de Lógica
+const AuthModule = require('./server/auth');
+const GameModule = require('./server/game');
+const RankingModule = require('./server/ranking');
+const SSEModule = require('./server/sse');
 
-const PORT = 8137; // Alterar para 81XX onde XX é o número do grupo
+// Configuração da Porta do Servidor
+const PORT = 8137;
 
-class TabServer {
-  constructor() {
-    this.userManager = new UserManager();
-    this.gameManager = new GameManager();
-    this.rankingManager = new RankingManager();
-    this.sseManager = new SSEManager();
-    
-    // Carregar dados persistidos
-    this.loadData();
-  }
+// Inicialização das Instâncias de Lógica
+const authModule = new AuthModule();
+const gameModule = new GameModule();
+const rankingModule = new RankingModule();
+// SSE precisa de acesso ao GameModule para consultar o estado do jogo
+const sseModule = new SSEModule(gameModule);
 
-  loadData() {
-    this.userManager.load();
-    this.rankingManager.load();
-  }
+console.log('[SERVER] Starting Tâb Game Server...');
 
-  saveData() {
-    this.userManager.save();
-    this.rankingManager.save();
-  }
+// ============================================
+// Helpers e Funções Utilitárias
+// ============================================
 
-  handleRequest(req, res) {
-    const parsedUrl = url.parse(req.url, true);
-    const pathname = parsedUrl.pathname;
-
-    // CORS headers
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-    if (req.method === 'OPTIONS') {
-      res.writeHead(200);
-      res.end();
-      return;
-    }
-
-    // GET - Update (Server-Sent Events)
-    if (req.method === 'GET' && pathname === '/update') {
-      this.handleUpdate(req, res, parsedUrl.query);
-      return;
-    }
-
-    // POST endpoints
-    if (req.method === 'POST') {
-      let body = '';
-      
-      req.on('data', chunk => {
-        body += chunk.toString();
-      });
-
-      req.on('end', () => {
-        try {
-          const data = JSON.parse(body);
-          this.handlePost(pathname, data, res);
-        } catch (error) {
-          this.sendError(res, 400, 'Invalid JSON');
-        }
-      });
-      return;
-    }
-
-    this.sendError(res, 404, 'Endpoint not found');
-  }
-
-  handlePost(pathname, data, res) {
-    try {
-      switch (pathname) {
-        case '/register':
-          this.handleRegister(data, res);
-          break;
-        case '/join':
-          this.handleJoin(data, res);
-          break;
-        case '/leave':
-          this.handleLeave(data, res);
-          break;
-        case '/roll':
-          this.handleRoll(data, res);
-          break;
-        case '/pass':
-          this.handlePass(data, res);
-          break;
-        case '/notify':
-          this.handleNotify(data, res);
-          break;
-        case '/ranking':
-          this.handleRanking(data, res);
-          break;
-        default:
-          this.sendError(res, 404, 'Unknown endpoint');
+/**
+ * Lê e processa o corpo (payload) de uma requisição HTTP.
+ * Converte o stream de dados brutos para um objeto JSON.
+ * * @param {http.IncomingMessage} req - Objeto de requisição.
+ * @returns {Promise<object>} - Objeto JSON com os dados.
+ */
+function parseBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      try {
+        resolve(JSON.parse(body));
+      } catch (error) {
+        reject(new Error('Invalid JSON'));
       }
-    } catch (error) {
-      console.error('Error handling request:', error);
-      this.sendError(res, 500, 'Internal server error');
+    });
+    req.on('error', reject);
+  });
+}
+
+/**
+ * Envia uma resposta HTTP formatada como JSON com cabeçalhos CORS.
+ * * @param {http.ServerResponse} res - Objeto de resposta.
+ * @param {number} status - Código de estado HTTP (ex: 200, 400).
+ * @param {object} data - Dados a enviar.
+ */
+function sendJSON(res, status, data) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*', // Permitir requisições de qualquer origem (CORS)
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  });
+  res.end(JSON.stringify(data));
+}
+
+/**
+ * Atalho para enviar uma resposta de erro JSON padrão.
+ */
+function sendError(res, status, message) {
+  sendJSON(res, status, { error: message });
+}
+
+/**
+ * Valida se um objeto contém todos os campos obrigatórios.
+ * * @param {object} data - Dados a validar.
+ * @param {Array<string>} fields - Lista de campos necessários.
+ * @returns {string|null} - Mensagem de erro ou null se válido.
+ */
+function validateRequired(data, fields) {
+  for (const field of fields) {
+    if (data[field] === undefined || data[field] === null) {
+      return `Missing required field: ${field}`;
     }
   }
+  return null;
+}
 
-  // ============================================
-  // REGISTER
-  // ============================================
-  handleRegister(data, res) {
-    const { nick, password } = data;
+// ============================================
+// Route Handlers (Controladores de Rotas)
+// ============================================
 
-    if (!nick || !password) {
-      this.sendError(res, 400, 'Missing nick or password');
-      return;
-    }
-
-    if (typeof nick !== 'string' || typeof password !== 'string') {
-      this.sendError(res, 400, 'Nick and password must be strings');
-      return;
-    }
-
-    try {
-      this.userManager.register(nick, password);
-      this.saveData();
-      this.sendSuccess(res, {});
-    } catch (error) {
-      this.sendError(res, 400, error.message);
-    }
-  }
-
-  // ============================================
-  // JOIN
-  // ============================================
- handleJoin(data, res) {
-  const { group, nick, password, size } = data;
-
-  if (!group || !nick || !password || !size) {
-    this.sendError(res, 400, 'Missing required arguments');
-    return;
-  }
-
-  if (typeof group !== 'number' || typeof nick !== 'string' || typeof password !== 'string') {
-    this.sendError(res, 400, 'Invalid argument types');
-    return;
-  }
-
-  if (typeof size !== 'number' || size < 7 || size > 15 || size % 2 === 0) {
-    this.sendError(res, 400, `Invalid size '${size}'`);
-    return;
-  }
-
-  if (!this.userManager.authenticate(nick, password)) {
-    this.sendError(res, 401, 'Authentication failed');
-    return;
-  }
-
+/**
+ * POST /register
+ * Regista um novo utilizador ou autentica um existente se a password coincidir.
+ */
+async function handleRegister(req, res) {
   try {
-    const game = this.gameManager.joinGame(group, nick, size);
+    const data = await parseBody(req);
     
-    // Enviar resposta primeiro
-    this.sendSuccess(res, { game: game.id });
-    
-    // Se o jogo ficou completo, dar tempo para ambos conectarem ao SSE
-    if (game.players.length === 2) {
-      setTimeout(() => {
-        const update = {
-          pieces: game.getPieces(),
-          initial: game.players[0],
-          step: 'from',
-          turn: game.players[0],
-          players: {
-            [game.players[0]]: 'Blue',
-            [game.players[1]]: 'Red'
-          }
-        };
-
-        console.log('🎮 Jogo completo! Enviando notificação inicial...');
-        this.sseManager.broadcast(game.id, update);
-      }, 1000); // Esperar 1 segundo para ambos conectarem
+    const error = validateRequired(data, ['nick', 'password']);
+    if (error) {
+      return sendError(res, 400, error);
     }
+    
+    const { nick, password } = data;
+    const result = authModule.register(nick, password);
+    
+    if (result.error) {
+      return sendError(res, 401, result.error);
+    }
+    
+    console.log(`[REGISTER] User ${nick} registered/authenticated`);
+    sendJSON(res, 200, {});
+    
   } catch (error) {
-    this.sendError(res, 400, error.message);
+    console.error('[REGISTER] Error:', error);
+    sendError(res, 500, 'Internal server error');
   }
 }
 
-  // ============================================
-  // LEAVE
-  // ============================================
-  handleLeave(data, res) {
-    const { nick, password, game } = data;
-
-    if (!nick || !password || !game) {
-      this.sendError(res, 400, 'Missing required arguments');
-      return;
+/**
+ * POST /join
+ * Adiciona um jogador à fila de espera (Matchmaking).
+ * Se encontrar par, inicia o jogo e notifica via SSE.
+ */
+async function handleJoin(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['group', 'nick', 'password', 'size']);
+    if (error) {
+      return sendError(res, 400, error);
     }
-
-    if (!this.userManager.authenticate(nick, password)) {
-      this.sendError(res, 401, 'Authentication failed');
-      return;
+    
+    const { group, nick, password, size } = data;
+    
+    // Validar credenciais antes de processar
+    if (!authModule.authenticate(nick, password)) {
+      return sendError(res, 401, 'Invalid credentials');
     }
-
-    try {
-      const gameObj = this.gameManager.getGame(game);
-      if (!gameObj) {
-        this.sendError(res, 400, 'Invalid game reference');
-        return;
-      }
-
-      const winner = gameObj.leave(nick);
-      
-      // Notificar jogadores
-      this.sseManager.broadcast(game, { winner });
-
-      // Atualizar ranking se houver vencedor
-      if (winner) {
-        this.rankingManager.addResult(gameObj.group, gameObj.size, winner, gameObj.getOpponent(winner));
-        this.saveData();
-      }
-
-      this.sendSuccess(res, {});
-    } catch (error) {
-      this.sendError(res, 400, error.message);
+    
+    // Validar parâmetros de jogo
+    if (typeof group !== 'number' || group <= 0) {
+      return sendError(res, 400, `Invalid group '${group}'`);
     }
+    
+    if (typeof size !== 'number' || size < 7 || size > 15 || size % 2 === 0) {
+      return sendError(res, 400, `Invalid size '${size}'`);
+    }
+    
+    // Tentar entrar na fila
+    const result = gameModule.join(group, nick, size);
+    
+    if (result.error) {
+      return sendError(res, 400, result.error);
+    }
+    
+    console.log(`[JOIN] ${nick} joined queue for group ${group}, size ${size}`);
+    
+    // Se o matchmaking encontrou um oponente, iniciar o jogo
+    if (result.matched) {
+      console.log(`[JOIN] Match found! Notifying both players for game ${result.game}`);
+      // Pequeno delay para garantir que o cliente estabeleceu conexão SSE
+      setTimeout(() => {
+        sseModule.notifyGameStart(result.game);
+      }, 100);
+    }
+    
+    // Retorna o ID do jogo (hash) para o cliente se conectar ao SSE
+    sendJSON(res, 200, { game: result.game });
+    
+  } catch (error) {
+    console.error('[JOIN] Error:', error);
+    sendError(res, 500, 'Internal server error');
   }
+}
 
-  // ============================================
-  // ROLL
-  // ============================================
-  handleRoll(data, res) {
+/**
+ * POST /leave
+ * Jogador desiste ou sai do jogo. Conta como derrota.
+ * Atualiza o ranking e notifica o outro jogador.
+ */
+async function handleLeave(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['nick', 'password', 'game']);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+    
     const { nick, password, game } = data;
-
-    if (!nick || !password || !game) {
-      this.sendError(res, 400, 'Missing required arguments');
-      return;
+    
+    if (!authModule.authenticate(nick, password)) {
+      return sendError(res, 401, 'Invalid credentials');
     }
-
-    if (!this.userManager.authenticate(nick, password)) {
-      this.sendError(res, 401, 'Authentication failed');
-      return;
+    
+    const result = gameModule.leave(nick, game);
+    
+    if (result.error) {
+      return sendError(res, 400, result.error);
     }
-
-    try {
-      const gameObj = this.gameManager.getGame(game);
-      if (!gameObj) {
-        this.sendError(res, 400, 'Invalid game reference');
-        return;
-      }
-
-      const dice = gameObj.rollDice(nick);
-      
-      // Verificar se pode jogar
-      const validMoves = gameObj.getValidMoves(nick);
-      const mustPass = validMoves.length === 0 && !dice.keepPlaying;
-
-      // Notificar ambos jogadores
-      this.sseManager.broadcast(game, {
-        dice,
-        turn: nick,
-        mustPass: mustPass ? nick : null
-      });
-
-      this.sendSuccess(res, {});
-    } catch (error) {
-      this.sendError(res, 400, error.message);
-    }
-  }
-
-  // ============================================
-  // PASS
-  // ============================================
-  handlePass(data, res) {
-    const { nick, password, game } = data;
-
-    if (!nick || !password || !game) {
-      this.sendError(res, 400, 'Missing required arguments');
-      return;
-    }
-
-    if (!this.userManager.authenticate(nick, password)) {
-      this.sendError(res, 401, 'Authentication failed');
-      return;
-    }
-
-    try {
-      const gameObj = this.gameManager.getGame(game);
-      if (!gameObj) {
-        this.sendError(res, 400, 'Invalid game reference');
-        return;
-      }
-
-      gameObj.pass(nick);
-      
-      const opponent = gameObj.getOpponent(nick);
-      
-      // Notificar mudança de turno
-      this.sseManager.broadcast(game, {
-        turn: opponent,
-        dice: null,
-        step: 'from'
-      });
-
-      this.sendSuccess(res, {});
-    } catch (error) {
-      this.sendError(res, 400, error.message);
-    }
-  }
-
-  // ============================================
-  // NOTIFY
-  // ============================================
-  handleNotify(data, res) {
-    const { nick, password, game, cell } = data;
-
-    if (!nick || !password || !game || cell === undefined) {
-      this.sendError(res, 400, 'Missing required arguments');
-      return;
-    }
-
-    if (typeof cell !== 'number') {
-      this.sendError(res, 400, 'Cell is not an integer');
-      return;
-    }
-
-    if (cell < 0) {
-      this.sendError(res, 400, 'Cell is negative');
-      return;
-    }
-
-    if (!this.userManager.authenticate(nick, password)) {
-      this.sendError(res, 401, 'Authentication failed');
-      return;
-    }
-
-    try {
-      const gameObj = this.gameManager.getGame(game);
-      if (!gameObj) {
-        this.sendError(res, 400, 'Invalid game reference');
-        return;
-      }
-
-      const result = gameObj.makeMove(nick, cell);
-      
-      // Verificar vencedor
-      const winner = gameObj.checkWinner();
-      if (winner) {
-        this.rankingManager.addResult(
+    
+    console.log(`[LEAVE] ${nick} left game ${game}`);
+    
+    // Se a saída resultou num vencedor (por W.O.), atualizar rankings
+    if (result.winner) {
+      const gameObj = gameModule.getGame(game);
+      if (gameObj) {
+        rankingModule.updateRanking(
           gameObj.group,
           gameObj.size,
-          winner,
-          gameObj.getOpponent(winner)
+          gameObj.player1,
+          gameObj.player2,
+          result.winner
         );
-        this.saveData();
-        
-        this.sseManager.broadcast(game, {
-          pieces: gameObj.getPieces(),
-          winner,
-          cell: result.cell
-        });
-      } else {
-        // Notificar jogada
-        const update = {
-          pieces: gameObj.getPieces(),
-          cell: result.cell,
-          selected: result.selected,
-          step: result.step,
-          turn: result.turn,
-          dice: result.dice
-        };
-
-        this.sseManager.broadcast(game, update);
       }
-
-      this.sendSuccess(res, {});
-    } catch (error) {
-      this.sendError(res, 400, error.message);
+      // Notificar fim de jogo aos clientes conectados
+      sseModule.notifyGameEnd(game, result.winner);
     }
-  }
-
-  // ============================================
-  // RANKING
-  // ============================================
-  handleRanking(data, res) {
-    const { group, size } = data;
-
-    if (!group) {
-      this.sendError(res, 400, 'Undefined group');
-      return;
-    }
-
-    if (!size) {
-      this.sendError(res, 400, "Invalid size 'undefined'");
-      return;
-    }
-
-    if (typeof size !== 'number' || size < 7 || size > 15 || size % 2 === 0) {
-      this.sendError(res, 400, `Invalid size '${size}'`);
-      return;
-    }
-
-    if (typeof group !== 'number') {
-      this.sendError(res, 400, `Invalid group '${group}'`);
-      return;
-    }
-
-    const ranking = this.rankingManager.getRanking(group, size);
-    this.sendSuccess(res, { ranking });
-  }
-
-  // ============================================
-  // UPDATE (SSE)
-  // ============================================
-  handleUpdate(req, res, query) {
-    const { nick, game } = query;
-
-    if (!game) {
-      this.sendError(res, 400, 'Invalid game reference');
-      return;
-    }
-
-    const gameObj = this.gameManager.getGame(game);
-    if (!gameObj) {
-      this.sendError(res, 400, 'Invalid game reference');
-      return;
-    }
-
-    // Configurar SSE
-    res.writeHead(200, {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'Connection': 'keep-alive',
-      'Access-Control-Allow-Origin': '*'
-    });
-
-    this.sseManager.addClient(game, nick, res);
-
-    req.on('close', () => {
-      this.sseManager.removeClient(game, nick);
-    });
-  }
-
-  // ============================================
-  // HELPERS
-  // ============================================
-  sendSuccess(res, data) {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify(data));
-  }
-
-  sendError(res, code, message) {
-    res.writeHead(code, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: message }));
+    
+    sendJSON(res, 200, {});
+    
+  } catch (error) {
+    console.error('[LEAVE] Error:', error);
+    sendError(res, 500, 'Internal server error');
   }
 }
 
+/**
+ * POST /ranking
+ * Retorna a tabela de classificação para um grupo e tamanho específicos.
+ */
+async function handleRanking(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['group', 'size']);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+    
+    const { group, size } = data;
+    
+    if (typeof group !== 'number' || group <= 0) {
+      return sendError(res, 400, `Invalid group '${group}'`);
+    }
+    
+    if (typeof size !== 'number' || size < 7 || size > 15 || size % 2 === 0) {
+      return sendError(res, 400, `Invalid size '${size}'`);
+    }
+    
+    const ranking = rankingModule.getRanking(group, size);
+    
+    console.log(`[RANKING] Retrieved ranking for group ${group}, size ${size}`);
+    sendJSON(res, 200, { ranking });
+    
+  } catch (error) {
+    console.error('[RANKING] Error:', error);
+    sendError(res, 500, 'Internal server error');
+  }
+}
+
+/**
+ * POST /roll
+ * Processa o lançamento dos dados (paus) pelo jogador.
+ */
+async function handleRoll(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['nick', 'password', 'game']);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+    
+    const { nick, password, game } = data;
+    
+    if (!authModule.authenticate(nick, password)) {
+      return sendError(res, 401, 'Invalid credentials');
+    }
+    
+    const result = gameModule.roll(nick, game);
+    
+    if (result.error) {
+      return sendError(res, 400, result.error);
+    }
+    
+    console.log(`[ROLL] ${nick} rolled dice in game ${game}`);
+    
+    // Se houver atualização de estado, notificar via SSE
+    if (result.update) {
+      sseModule.notifyUpdate(game, result.update);
+    }
+    
+    // Retornar resultado do dado na resposta HTTP também
+    sendJSON(res, 200, result);
+    
+  } catch (error) {
+    console.error('[ROLL] Error:', error);
+    sendError(res, 500, 'Internal server error');
+  }
+}
+
+/**
+ * POST /notify
+ * Processa o movimento de uma peça (escolha de origem ou destino).
+ * Verifica vitórias e atualiza rankings se necessário.
+ */
+async function handleNotify(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['nick', 'password', 'game', 'cell']);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+    
+    const { nick, password, game, cell } = data;
+    
+    if (!authModule.authenticate(nick, password)) {
+      return sendError(res, 401, 'Invalid credentials');
+    }
+    
+    const result = gameModule.notify(nick, game, cell);
+    
+    if (result.error) {
+      return sendError(res, 400, result.error);
+    }
+    
+    console.log(`[NOTIFY] ${nick} moved piece in game ${game}`);
+    
+    if (result.winner) {
+      // Jogo terminou com vitória
+      const gameObj = gameModule.getGame(game);
+      if (gameObj) {
+        rankingModule.updateRanking(
+          gameObj.group,
+          gameObj.size,
+          gameObj.player1,
+          gameObj.player2,
+          result.winner
+        );
+      }
+      sseModule.notifyGameEnd(game, result.winner);
+    } else if (result.update) {
+      // Jogo continua, notificar novo estado
+      sseModule.notifyUpdate(game, result.update);
+    }
+    
+    sendJSON(res, 200, result);
+    
+  } catch (error) {
+    console.error('[NOTIFY] Error:', error);
+    sendError(res, 500, 'Internal server error');
+  }
+}
+
+/**
+ * POST /pass
+ * Jogador passa a vez voluntariamente ou forçadamente.
+ */
+async function handlePass(req, res) {
+  try {
+    const data = await parseBody(req);
+    
+    const error = validateRequired(data, ['nick', 'password', 'game']);
+    if (error) {
+      return sendError(res, 400, error);
+    }
+    
+    const { nick, password, game } = data;
+    
+    if (!authModule.authenticate(nick, password)) {
+      return sendError(res, 401, 'Invalid credentials');
+    }
+    
+    const result = gameModule.pass(nick, game);
+    
+    if (result.error) {
+      return sendError(res, 400, result.error);
+    }
+    
+    console.log(`[PASS] ${nick} passed turn in game ${game}`);
+    
+    if (result.update) {
+      sseModule.notifyUpdate(game, result.update);
+    }
+    
+    sendJSON(res, 200, result);
+    
+  } catch (error) {
+    console.error('[PASS] Error:', error);
+    sendError(res, 500, 'Internal server error');
+  }
+}
+
+/**
+ * GET /update
+ * Endpoint para estabelecer conexão Server-Sent Events (SSE).
+ * Mantém a conexão aberta para enviar atualizações em tempo real.
+ */
+function handleUpdate(req, res) {
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const game = url.searchParams.get('game');
+  const nick = url.searchParams.get('nick');
+  
+  if (!game || !nick) {
+    return sendError(res, 400, 'Missing game or nick parameter');
+  }
+  
+  // Cabeçalhos específicos para SSE
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+    'Access-Control-Allow-Origin': '*'
+  });
+  
+  sseModule.addClient(game, nick, res);
+  
+  console.log(`[SSE] Client connected: ${nick} to game ${game}`);
+  
+  // Limpar cliente quando a conexão fecha
+  req.on('close', () => {
+    sseModule.removeClient(game, nick);
+    console.log(`[SSE] Client disconnected: ${nick} from game ${game}`);
+  });
+}
+
+/**
+ * Servir ficheiros estáticos (HTML, CSS, JS, Imagens).
+ * Permite que o servidor backend também sirva o frontend.
+ */
+function serveStaticFile(req, res) {
+  // Padrão: servir index.html se raiz
+  const filePath = req.url === '/' ? '/index.html' : req.url;
+  const extname = path.extname(filePath);
+  
+  const contentTypes = {
+    '.html': 'text/html',
+    '.css': 'text/css',
+    '.js': 'text/javascript',
+    '.json': 'application/json',
+    '.png': 'image/png',
+    '.jpg': 'image/jpeg',
+    '.svg': 'image/svg+xml'
+  };
+  
+  const contentType = contentTypes[extname] || 'application/octet-stream';
+  const fullPath = path.join(__dirname, '..', filePath);
+  
+  fs.readFile(fullPath, (err, content) => {
+    if (err) {
+      if (err.code === 'ENOENT') {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('404 Not Found');
+      } else {
+        res.writeHead(500);
+        res.end('Server Error');
+      }
+    } else {
+      res.writeHead(200, { 
+        'Content-Type': contentType,
+        'Access-Control-Allow-Origin': '*'
+      });
+      res.end(content);
+    }
+  });
+}
+
 // ============================================
-// INICIAR SERVIDOR
+// Main Server Loop e Inicialização
 // ============================================
 
-const server = new TabServer();
-
-const httpServer = http.createServer((req, res) => {
-  server.handleRequest(req, res);
+const server = http.createServer((req, res) => {
+  console.log(`[${req.method}] ${req.url}`);
+  
+  // Tratamento de CORS Preflight (OPTIONS)
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200, {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type'
+    });
+    return res.end();
+  }
+  
+  // Encaminhamento de Rotas da API (POST)
+  if (req.method === 'POST') {
+    if (req.url === '/register') return handleRegister(req, res);
+    if (req.url === '/join') return handleJoin(req, res);
+    if (req.url === '/leave') return handleLeave(req, res);
+    if (req.url === '/ranking') return handleRanking(req, res);
+    if (req.url === '/roll') return handleRoll(req, res);
+    if (req.url === '/notify') return handleNotify(req, res);
+    if (req.url === '/pass') return handlePass(req, res);
+  }
+  
+  // Rota SSE (GET)
+  if (req.method === 'GET' && req.url.startsWith('/update')) {
+    return handleUpdate(req, res);
+  }
+  
+  // Rotas de Ficheiros Estáticos (Frontend)
+  if (req.method === 'GET') {
+    return serveStaticFile(req, res);
+  }
+  
+  // Rota não encontrada
+  sendError(res, 404, 'Not Found');
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`🎮 Servidor Tâb a correr na porta ${PORT}`);
-  console.log(`🌐 http://localhost:${PORT}`);
-});
-
-// Guardar dados periodicamente
+// Tarefas de Manutenção Periódica
+// Limpa jogos antigos e conexões mortas a cada minuto
 setInterval(() => {
-  server.saveData();
-}, 60000); // A cada minuto
+  gameModule.cleanupOldGames();
+  sseModule.cleanupInactive();
+}, 60000); // 60 segundos
 
-// Guardar dados ao sair
-process.on('SIGINT', () => {
-  console.log('\n💾 A guardar dados...');
-  server.saveData();
-  process.exit(0);
+// Iniciar Servidor
+server.listen(PORT, () => {
+  console.log(`[SERVER] ✅ Server running on http://localhost:${PORT}`);
+  console.log(`[SERVER] Ready to accept connections!`);
 });
